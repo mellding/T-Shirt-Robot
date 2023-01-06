@@ -61,38 +61,40 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void revolveToNext(){
-    if(shotCounter % 2 == 0) nextShooterPos = currentShooterPos + 1366;
-    else nextShooterPos = currentShooterPos + 1365;
+    if(!isEnabled) return;
+    if(shotCounter % 2 == 0) nextShooterPos = currentShooterPos + Math.round(Constants.REVOLVER_ENCODER_CPR / 6);
+    else nextShooterPos = currentShooterPos + Math.round(Constants.REVOLVER_ENCODER_CPR / 6) - 1;
     revolveMotor.set(ControlMode.Position, nextShooterPos);
     double startTime = shooterTimer.getTime();
     while(true){
       if((Math.abs(shooterTimer.getTime() - startTime) <= Constants.REVOLVE_MAX_DELAY)
-          && (Math.abs(currentShooterPos - nextShooterPos) <= Constants.REVOLVER_MAX_ERROR)) {
+          && (Math.abs(revolveMotor.getSelectedSensorPosition() - nextShooterPos) <= Constants.REVOLVER_MAX_ERROR)) {
             break;
           }else if((Math.abs(shooterTimer.getTime() - startTime) >= Constants.REVOLVE_MAX_DELAY)
-                    && (Math.abs(currentShooterPos - nextShooterPos) >= Constants.REVOLVER_MAX_ERROR)){
+                    && (Math.abs(revolveMotor.getSelectedSensorPosition() - nextShooterPos) >= Constants.REVOLVER_MAX_ERROR)){
             disableRevolver();
+            return;
           }
-          
     } 
     currentShooterPos = nextShooterPos;
     shotCounter++;
   }
 
   public void revolveToPrev(){
-    if(shotCounter % 2 == 0) nextShooterPos = currentShooterPos - 1366;
-    else nextShooterPos = currentShooterPos - 1365;
+    if(!isEnabled) return;
+    if(shotCounter % 2 == 0) nextShooterPos = currentShooterPos - Math.round(Constants.REVOLVER_ENCODER_CPR / 6);
+    else nextShooterPos = currentShooterPos - Math.round(Constants.REVOLVER_ENCODER_CPR / 6) - 1;
     revolveMotor.set(ControlMode.Position, nextShooterPos);
     double startTime = shooterTimer.getTime();
     while(true){
       if((Math.abs(shooterTimer.getTime() - startTime) <= Constants.REVOLVE_MAX_DELAY)
-          && (Math.abs(currentShooterPos - nextShooterPos) <= Constants.REVOLVER_MAX_ERROR)) {
+          && (Math.abs(revolveMotor.getSelectedSensorPosition() - nextShooterPos) <= Constants.REVOLVER_MAX_ERROR)) {
             break;
           }else if((Math.abs(shooterTimer.getTime() - startTime) >= Constants.REVOLVE_MAX_DELAY)
-                    && (Math.abs(currentShooterPos - nextShooterPos) >= Constants.REVOLVER_MAX_ERROR)){
+                    && (Math.abs(revolveMotor.getSelectedSensorPosition() - nextShooterPos) >= Constants.REVOLVER_MAX_ERROR)){
             disableRevolver();
-          }
-          
+            return;
+          }   
     } 
     currentShooterPos = nextShooterPos;
     shotCounter--;
